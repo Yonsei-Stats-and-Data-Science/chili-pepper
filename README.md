@@ -60,4 +60,15 @@ $ git commit -m "[update]some new feature"
 $ git commit -m "[deprecated]some old feature"
 ```
 
+## Footnotes
 
+Markdown supports footnotes with the following syntax(`[^NAME]`). Footnotes will be rendered easily in GitHub.
+
+```markdown
+Einstein said "..."[^fn1].
+
+...
+
+# The end of markdown document.
+[^fn1]: Some Link or Reference
+```
