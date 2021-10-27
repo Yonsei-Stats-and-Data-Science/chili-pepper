@@ -26,11 +26,21 @@ There are typiccally three use cases for scaling R:
 |Scaling for Big Data|Big data, black box routines that require fitting a model against an entire domain space. Data can’t fit on one machine.|R is an orchestration engine. Heavy lifting is done by a different compute engine on the cluster. R syntax is used to construct pipelines, and R is used to analyze results.|Hadoop, Spark, Tensorflow, Oracle BDA, Microsoft R Server, Aster, H2O.ai|
 [^fn2]
 
+## Singularity and Rocker Image
+RStudio Server will be available on the cluster using a Docker image(imported into Singularity) provided by the Rocker project.[^fn4]
 
+### Rocker Project
+The Rocker project provides a widely-used suite of Docker images with
+customized R environments for particular tasks.[^fn5]
+
+### Singularity
+SingularityCE is a container platform. It allows you to create and run containers that package up pieces of software in a way that is portable and reproducible. You can build a container using SingularityCE on your laptop, and then run it on many of the largest HPC clusters in the world, local university or company clusters, a single server, in the cloud, or on a workstation down the hall. Your container is a single file, and you don’t have to worry about how to install all the software you need on each different operating system. 
+
+SingularityCE was created to run complex applications on HPC clusters in a simple, portable, and reproducible way. First developed at Lawrence Berkeley National Laboratory, it quickly became popular at other HPC sites, academic sites, and beyond. SingularityCE is an open-source project, with a friendly community of developers and users. The user base continues to expand, with SingularityCE now used across industry and academia in many areas of work. [^fn6]
+
+Singularity is useful for running containers as an unprivileged user, especially in multi-user environments like High-Performance Computing clusters. Rocker images can be imported and run using Singularity, with optional custom password support.[^fn4]
 
 ## SLURM
-
-RStudio Server will be available on the cluster using a Docker image.[^fn4]
 
 The cluster is managed by the SLURM queueing software. SLURM provides a standard batch queueing system through which users submit jobs to the cluster. Jobs are typically submitted to SLURM using a user-defined shell script that executes one's application code. Interactive use is also an option. Users may also query the cluster to see job status.[^fn3]
 
@@ -45,11 +55,16 @@ One can use SLURM to submit a variety of types of parallel code. A set of potent
 Many institutions run RStudio server managed by SLURM, 
 ### Department of Statistics, University of California Berkely [^fn3]
 ### High Performance Computing Cluster, The Iowa State University [^fn4]
-### Princeton Research Computing [^fn5]
+### Princeton Research Computing [^fn9]
+
+Especially, the Iowa State University uses the combination of Rocker image, Singularity and SLRUM.[^fn4]
 
 
 [^fn1]: https://www.hpc.iastate.edu/guides/containers/rstudio
 [^fn2]: https://support.rstudio.com/hc/en-us/articles/236226087-Scaling-R-and-RStudio
 [^fn3]: https://statistics.berkeley.edu/computing/servers/cluster
 [^fn4]: https://www.hpc.iastate.edu/guides/containers/rstudio
-[^fn5]: https://researchcomputing.princeton.edu/support/knowledge-base/rrstudio#ondemand
+[^fn5]: https://journal.r-project.org/archive/2017/RJ-2017-065/RJ-2017-065.pdf
+[^fn6]: https://sylabs.io/guides/latest/user-guide/introduction.html#why-use-singularityce
+[^fn7]: https://www.rocker-project.org/use/singularity/
+[^fn9]: https://researchcomputing.princeton.edu/support/knowledge-base/rrstudio#ondemand
