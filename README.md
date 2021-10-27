@@ -74,4 +74,7 @@ Einstein said "..."[^fn1].
 ```
 
 ## Feedbacks for documents
+
+*Comment on the commit*  
+
 To add feedbacks, click the latest commit associated to the document of interest and add a comment. 
