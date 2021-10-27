@@ -72,3 +72,6 @@ Einstein said "..."[^fn1].
 # The end of markdown document.
 [^fn1]: Some Link or Reference
 ```
+
+## Feedbacks for documents
+To add feedbacks, click the latest commit associated to the document of interest and add a comment. 
