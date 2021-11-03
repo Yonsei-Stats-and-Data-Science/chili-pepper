@@ -8,30 +8,52 @@ author: Jongmin Mun
 ## Intro
 
 ### RStudio
-RStudio is an integrated development environment for the R programming language, with limited support for other programming languages (including Python, bash, and SQL). RStudio provides a powerful graphical environment for importing data in a number of formats (including CSV, Excel spreadsheets, SAS, and SPSS); manipulating, analyzing, and visualizing data; version control with git or SVN; a graphical R package manager that provides point/click search/installation/uninstallation of R packages from its substantial ecosystem (including the Bioconductor repository, which provides almost 1500 software tools “for the analysis and comprehension of high-throughput genomic data.”); and many other features.[^fn1]
+RStudio is an integrated development environment for the R programming language, with limited support for other programming languages (including Python, bash, and SQL).
+
+The advantages of RStudio can be summarized as follows:
+1. a powerful graphical environment for importing data in a number of formats (including CSV, Excel spreadsheets, SAS, and SPSS).
+2. Easy manipulating, analyzing, and visualizing data.
+3. Version control with git or SVN.
+4. A graphical R package manager that provides point/click search/installation/uninstallation of R packages from its substantial ecosystem.
+[^fn1]
 
 ### RStudio Server
-RStudio Server is a client/server version of RStudio that runs on a remote server and is accessed via the client’s web browser. A graphical file manager allows file upload/download from hpc-class via web browser.
+RStudio Server is a client/server version of RStudio that runs on a remote server and is accessed via the client’s web browser. A graphical file manager allows file upload/download from HPC via web browser.
 
 ### Scaling R and Rstudio
-There are typiccally three use cases for scaling R:
-1. Scaling for many R Users - for multiple data science researchers or students to seamlessly work on a HPC(high performance computing) environment for multiple projects.
-2. Scaling for HPC - for parallel tasks cross validation.
-3. Scaling for Big Data - for data that can't fit on one machine.
+There are typiccally three use cases for scaling R in HPC(high performance computing) environment:
+1. Scaling for many R Users - for multiple data science researchers or students to seamlessly work on a HPC environment for multiple projects.
+2. Scaling for HPC - for parallel tasks like cross validation.
+3. Scaling for Big Data - for datasets that can't fit on one machine.
 
 |Use Case|Problem|Solutions|Possible Technology|
 |------|---|---|--|
 |Scaling for Many R Users|Regular R workflows for a team. Includes loading data subsets from files or warehouses|Create a platform to support large-scale individual interactive R session(s) and jobs|RStudio Server, RStudio Workbench + Load Balancer, RStudio Workbench + Launcher|
-|Scaling for HPC|Embarrassingly parallel tasks like: bootstrapping, cross validation, scoring, model fitting on independent groups|Develop code in an interactive R session in RStudio. Submit code in batch jobs on compute R processes. R must be installed on all compute nodes.|Local: parallel, Rmpi, snow, Rcpp parallel; Cluster: RStudio Workbench + Launcher, Kubernetes, Slurm, LSF, Torque, Docker; Recommendation: batchtools package|
+|Scaling for HPC|(1) Embarrassingly parallel tasks like: bootstrapping, cross validation, scoring, model fitting on independent groups. (2) Matrix-intensive computations like: Gaussian process regression or MCMC computation for general non-conjugate Bayesian inference. |Develop code in an interactive R session in RStudio. Submit code in batch jobs on compute R processes. R must be installed on all compute nodes.|Local: parallel, Rmpi, snow, Rcpp parallel; Cluster: RStudio Workbench + Launcher, Kubernetes, Slurm, LSF, Torque, Docker; Recommendation: batchtools package|
 |Scaling for Big Data|Big data, black box routines that require fitting a model against an entire domain space. Data can’t fit on one machine.|R is an orchestration engine. Heavy lifting is done by a different compute engine on the cluster. R syntax is used to construct pipelines, and R is used to analyze results.|Hadoop, Spark, Tensorflow, Oracle BDA, Microsoft R Server, Aster, H2O.ai|
+
 [^fn2]
 
 ## Singularity and Rocker Image
-RStudio Server will be available on the cluster using a Docker image(imported into Singularity) provided by the Rocker project.[^fn4]
+RStudio Server will be available on the cluster using a Docker image(imported into Singularity) provided by the Rocker project[^fn4] and docker image for Microsoft R open(for parallelization).
 
 ### Rocker Project
 The Rocker project provides a widely-used suite of Docker images with
 customized R environments for particular tasks.[^fn5]
+
+### Microsoft R open(MRO)
+Microsoft R Open is the enhanced distribution of R from Microsoft Corporation. Its main features include: [^fn10]
+1. **MKL library.** Multi-threaded math libraries that brings multi-threaded computations to R.
+   - This boosts up the speed of matrix-intensive calculations.
+   - For example, in some Bayesian inference for non-conjugate models, at each step of the MCMC chain, we need to repeat matrix operations such as QR decomposition, Cholesky, etc., and in that case wee will see a substantial speedup. [^fn11]
+2. **MRAN.** A high-performance default CRAN repository that provide a consistent and static set of packages to all Microsoft R Open users.
+   - This stores all the snapshots of the packeges of CRAN repository.
+   - This is known to often cause errors, so we think it's better not to use it. We can easily switch to CRAN with chooseCRANmirror().[^fn11]
+3. **checkpoint package.** that make it easy to share R code and replicate results using specific R package versions.
+   - This enables locking down the versions of packages being used once we release the scripts, thus increasaing the reproducibility.
+
+For a docker image for MRO, we can use a project inspired by Rocker project: [^fn12]
+- o2r team member Daniel created a Docker image for MRO including MKL. It is available on Docker Hub as nuest/mro, with Dockerfile on GitHub. It is inspired by the Rocker images and can be used in the same fashion. Please note the extended licenses printed at every startup for MKL. [^fn13]
 
 ### Singularity
 SingularityCE is a container platform. It allows you to create and run containers that package up pieces of software in a way that is portable and reproducible. You can build a container using SingularityCE on your laptop, and then run it on many of the largest HPC clusters in the world, local university or company clusters, a single server, in the cloud, or on a workstation down the hall. Your container is a single file, and you don’t have to worry about how to install all the software you need on each different operating system. 
@@ -68,3 +90,7 @@ Especially, the Iowa State University uses the combination of Rocker image, Sing
 [^fn6]: https://sylabs.io/guides/latest/user-guide/introduction.html#why-use-singularityce
 [^fn7]: https://www.rocker-project.org/use/singularity/
 [^fn9]: https://researchcomputing.princeton.edu/support/knowledge-base/rrstudio#ondemand
+[^fn10]: https://mran.microsoft.com/rro#intelmkl1
+[^fn11]: https://community.rstudio.com/t/base-r-vs-microsoft-r-open/1757
+[^fn12]: https://www.r-bloggers.com/2016/12/investigating-docker-and-r-2/
+[^fn13]: https://hub.docker.com/r/nuest/mro/
