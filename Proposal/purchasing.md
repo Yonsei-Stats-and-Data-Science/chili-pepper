@@ -54,3 +54,19 @@ Content: Email from ijin@yonsei.ac.kr
 
 ---
 
+
+Date: Nov 7, 2021
+
+Content: Email from Sangwook.Ahn@dell.com
+
+> 안녕하세요. 손동욱 연구원님. DellEMC 안상욱 입니다. 지난 미팅 시CPU/GPU 클러스터 관련 요청하신 내용 기반으로 사이징하여 첨부와 같이 제안드립니다. 검토하시고 문의사항이 있으시면 언제든지 연락주십시오.
+
+The attachments for this mail is included in `./whitesheet/`. 
+
+받은 견적을 정리하면 HPC 시스템은 다음처럼 구성된다. 
+
+1. master 노드
+   1. 하위 노드들을 관리하는 
+2. 하위 노드
+   1. CPU 연산용 노드
+   2. GPU 연산용 노드
