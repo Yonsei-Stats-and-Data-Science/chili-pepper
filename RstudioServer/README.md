@@ -1,6 +1,6 @@
 ---
 title: RStudio Server with SLURM for Yonsei Data Science Machine
-author: Jongmin Mun
+author: Jongmin Mun, Dongook Son
 ---
 
 # RStudio Server with SLURM for Yonsei Data Science Machine
@@ -19,6 +19,46 @@ The advantages of RStudio can be summarized as follows:
 
 ### RStudio Server
 RStudio Server is a client/server version of RStudio that runs on a remote server and is accessed via the client’s web browser. A graphical file manager allows file upload/download from HPC via web browser.
+
+### RStudio Server Installation for Single Server
+
+#### Prerequisites
+
+1. Check for network portforwarding rules and firewall rules. Make sure that port `8787` is accessible since this is the default port that RStudio Server listens to.
+
+2. Add CRAN repository to package manager. For Ubuntu servers the following command will install helper packages, add the gpg key for the cran repository.
+```sh
+# install helper packages
+sudo apt install --no-install-recommends software-properties-common dirmngr
+
+# get gpg key
+wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+
+# add R4.0 repo from CRAN
+sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+```
+
+3. Install base R without additional dependencies.
+```sh
+sudo apt install --no-install-recommends r-base 
+```
+
+#### Install RStudio Server
+
+1. Install `gdebi` in order to install local `deb` packages.
+```sh
+sudo apt install gdebi-core
+```
+
+2. Download RStudio Server `deb` package and install.
+```sh
+wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-2021.09.1-372-amd64.deb
+sudo gdebi rstudio-server-2021.09.1-372-amd64.deb
+```
+
+#### Post-installation
+
+On a client webbrowser, go to http://<server-public-ip>:8787. As the default authenticator is PAM, login with *preexisting system-wide* username and password. 
 
 ### Scaling R and Rstudio
 There are typiccally three use cases for scaling R in HPC(high performance computing) environment:
