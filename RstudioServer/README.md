@@ -58,7 +58,7 @@ sudo gdebi rstudio-server-2021.09.1-372-amd64.deb
 
 #### Post-installation
 
-On a client webbrowser, go to http://<server-public-ip>:8787. As the default authenticator is PAM, login with *preexisting system-wide* username and password. 
+On a client webbrowser, go to `http://<server-public-ip>:8787`. As the default authenticator is PAM, login with *preexisting system-wide* username and password. 
 
 ### Scaling R and Rstudio
 There are typiccally three use cases for scaling R in HPC(high performance computing) environment:
