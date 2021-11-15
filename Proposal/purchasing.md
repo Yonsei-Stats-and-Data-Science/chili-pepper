@@ -66,7 +66,24 @@ The attachments for this mail is included in `./whitesheet/`.
 받은 견적을 정리하면 HPC 시스템은 다음처럼 구성된다. 
 
 1. master 노드
-   1. 하위 노드들을 관리하는 
+   8C/16T, 32*2=64GB RAM, 480 * 2 = 960GB SSD, 12TB * 5 = 60 TB
+   1. 하위 노드 관리 및 스케줄링 SW
+      - Bright Computing
+      - SLURM
+      - Kubernetes
+   2. Storage Container
+      - GitLab
+      - Data Version Control(https://dvc.org)
 2. 하위 노드
    1. CPU 연산용 노드
+      24C/48T, 32*16=512GB RAM, 480 * 2 = 960GB SSD
+      - Recieve Jobs
+        - JupyterHub(CPU only)
+        - RStudio Server
+        - SAS Server
+        - SLURM
    2. GPU 연산용 노드
+      20C/40T, 32*16=512GB RAM, 480 * 2 = 960GB SSD, NVIDIA A100(40GB) * 2 with 7MIG
+      - Recieve Jobs
+        - JupyterHub(GPU only)
+
