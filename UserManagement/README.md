@@ -7,6 +7,8 @@ author: Dongook Son
 
 Since we start as a beta-test, collect people who wants to participate and use the compute machine. 
 
+0. Enroll student to this github repo.
+
 1. Create user via `adduser` and generate a random password. Store `id,pw` somewhere safe in a private local machine. 
 
 2. Inform user their login details and instructions on how to use the server. 
