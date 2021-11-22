@@ -9,7 +9,12 @@ author: Dongook Son
 
 - Enroll student to this github repo or Slack group.
 
-- Create instruction files in `/etc/skel`
+- Create instruction files in `/etc/skel`.
+
+- Create default group for users(`bkusers`).
+    ```bash
+    sudo groupadd bkusers
+    ```
 
 
 ## Enrollment for CPU Server
@@ -22,3 +27,5 @@ Since we start as a beta-test, collect people who wants to participate and use t
 UNAME=someusername
 sudo useradd -m -d /mnt/nas/users/$UNAME -G bkusers $UNAME && sudo passwd $UNAME
 ```
+
+2. Notify the user of login details.
