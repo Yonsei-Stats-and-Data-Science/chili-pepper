@@ -3,16 +3,22 @@ title: User Management
 author: Dongook Son
 ---
 
+## Prerequisite
+
+- NAS must be mounted before user creation.
+
+- Enroll student to this github repo or Slack group.
+
+- Create instruction files in `/etc/skel`
+
+
 ## Enrollment for CPU Server
 
 Since we start as a beta-test, collect people who wants to participate and use the compute machine. 
 
-0. Enroll student to this github repo.
+1. Create user via `useradd` and create a password.
 
-1. Create user via `adduser` and generate a random password. Store `id,pw` somewhere safe in a private local machine. 
-
-2. Inform user their login details and instructions on how to use the server. 
-
-    - Store data in the `Data/` folder for each users' home directory. This will be a directory in the NAS.
-
-3. Create symlink to NAS.
+```bash
+UNAME=someusername
+sudo useradd -m -d /mnt/nas/users/$UNAME -G bkusers $UNAME && sudo passwd $UNAME
+```
