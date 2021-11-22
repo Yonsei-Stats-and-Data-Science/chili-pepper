@@ -29,3 +29,10 @@ sudo useradd -m -d /mnt/nas/users/$UNAME -G bkusers $UNAME && sudo passwd $UNAME
 ```
 
 2. Notify the user of login details.
+
+*UPDATE*
+
+In `/mnt/nas/admin` use `create-bkuser.sh` in the following way.
+```bash
+./create-bkuser.sh USERNAME
+```
