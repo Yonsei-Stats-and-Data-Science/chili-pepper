@@ -17,6 +17,7 @@ The advantages of RStudio can be summarized as follows:
 4. A graphical R package manager that provides point/click search/installation/uninstallation of R packages from its substantial ecosystem.
 [^fn1]
 
+
 ### RStudio Server
 RStudio Server is a client/server version of RStudio that runs on a remote server and is accessed via the client’s web browser. A graphical file manager allows file upload/download from HPC via web browser.
 
@@ -118,8 +119,12 @@ Many institutions run RStudio server managed by SLURM,
 ### Department of Statistics, University of California Berkely [^fn3]
 ### High Performance Computing Cluster, The Iowa State University [^fn4]
 ### Princeton Research Computing [^fn9]
-
 Especially, the Iowa State University uses the combination of Rocker image, Singularity and SLRUM.[^fn4]
+
+## Limitations for Open-sourced Version of RStudio Server
+
+According to the comparision docuemnt[^fn14], RStudio Server is not as configurable as JupyterHub.
+
 
 
 [^fn1]: https://www.hpc.iastate.edu/guides/containers/rstudio
@@ -134,3 +139,4 @@ Especially, the Iowa State University uses the combination of Rocker image, Sing
 [^fn11]: https://community.rstudio.com/t/base-r-vs-microsoft-r-open/1757
 [^fn12]: https://www.r-bloggers.com/2016/12/investigating-docker-and-r-2/
 [^fn13]: https://hub.docker.com/r/nuest/mro/
+[^fn14]; https://www.rstudio.com/products/workbench/comparison/
