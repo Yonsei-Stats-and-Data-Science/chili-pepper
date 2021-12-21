@@ -16,24 +16,24 @@ mail content:
 (02-2123-3411)
 
 
-# Analysis of Yonsei DNS server
+# Analysis of Yonsei University DNS server
 
 - 연세대학교(registrant)가 요금을 지불하고 고용한 registrar는 Inames Co., Ltd.이다.
-- 연세대학교가 보유한 도메인은 yonsei.[ac.kr](http://ac.kr)이다.
-- 연세대학교가 운영하는 name server는 165.132.10.21([ns.yonsei.ac.kr](http://ns.yonsei.ac.kr/))이다.
-- 165.132.10.21([ns.yonsei.ac.kr](http://ns.yonsei.ac.kr/))는 NS record type으로 .ac.kr이나 .kr을 담당하는 name server에 등록되어 있을 것이다. 레코드 내용은 다음과 같을 것이다.
+- 연세대학교가 보유한 도메인은 yonsei.ac.kr이다.
+- 연세대학교가 운영하는 name server는 165.132.10.21(http://ns.yonsei.ac.kr/))이다.
+- 165.132.10.21(http://ns.yonsei.ac.kr/)는 NS record type으로 .ac.kr이나 .kr을 담당하는 name server에 등록되어 있을 것이다. 레코드 내용은 다음과 같을 것이다.
     
     ```latex
-    [yonsei.ac.kr](http://yonsei.ac.kr) NS ns.yonsei.ac.kr
+    (http://yonsei.ac.kr) NS ns.yonsei.ac.kr
     ```
     
-- bk21-bigdata.yonsei.ac.kr등은 yonsei.ac.kr의 서브도메인으로, 165.132.10.21([ns.yonsei.ac.kr](http://ns.yonsei.ac.kr/))에 레코드로 기록되어 있을 것이다. 레코드 내용은 다음과 같을 것이다(실제 해당 사이트의 IP임. IP로 접속은 차단되어 있음)
+- bk21-bigdata.yonsei.ac.kr등은 yonsei.ac.kr의 서브도메인으로, 165.132.10.21(http://ns.yonsei.ac.kr/))에 레코드로 기록되어 있을 것이다. 레코드 내용은 다음과 같을 것이다(실제 해당 사이트의 IP임. IP로 접속은 차단되어 있음)
     
     ```latex
     bk21-bigdata A 112.175.184.12
     ```
     
-- bk21-bigdata.yonsei.ac.kr의 IP주소는 112.175.184.12로, 교내 IP 주소인 165.132.xx.xx와 다르다. 교내에서 호스팅하는 것이 아니라 [닷홈](https://www.dothome.co.kr/) 이라는 업체에서 호스팅하고 있다.[](https://www.dothome.co.kr/)
+- bk21-bigdata.yonsei.ac.kr의 IP주소는 112.175.184.12로, 교내 IP 주소인 165.132.xx.xx와 다르다. 교내에서 호스팅하는 것이 아니라 닷홈[^fn9]이라는 업체에서 호스팅하고 있다.
 
 # 목표: 두 가지 방향
 
@@ -44,27 +44,27 @@ mail content:
     2. 계약이 불발될 경우 다른 name server 서비스를 사용
     3. 혹은 직접 name server 구동
 
- 2. bk21-bigdata라는 subdomain을 165.132.10.21([ns.yonsei.ac.kr](http://ns.yonsei.ac.kr/))에서 이관(delegate)해 온다.
+ 1. bk21-bigdata라는 subdomain을 165.132.10.21(http://ns.yonsei.ac.kr/)에서 이관(delegate)해 온다.
 
-즉,  165.132.10.21([ns.yonsei.ac.kr](http://ns.yonsei.ac.kr/))에서 다음 레코드를 지우고
+    즉,  165.132.10.21(http://ns.yonsei.ac.kr/)에서 다음 레코드를 지우고
 
-```latex
-bk21-bigdata A 112.175.184.12
-```
+    ```latex
+    bk21-bigdata A 112.175.184.12
+    ```
 
-아래 레코드를 기록하게 한다.
+    아래 레코드를 기록하게 한다.
 
-```latex
-bk21-bigdata NS ns.naverglobal....
-```
+    ```latex
+    bk21-bigdata NS ns.naverglobal....
+    ```
 
-1. 앞으로 배포할 다양한 서비스에 자유롭게 서브도메인을 할당하여 사용한다. 즉, 아래와 같은 레코드를 우리 name server에 기록한다.
+    앞으로 배포할 다양한 서비스에 자유롭게 서브도메인을 할당하여 사용한다. 즉, 아래와 같은 레코드를 우리 name server에 기록한다.
 
-```latex
-jupyter A 192.xxx...
-rstudio A 192.xxx..
-wiki A 192.xxx...
-```
+    ```latex
+    jupyter A 192.xxx...
+    rstudio A 192.xxx..
+    wiki A 192.xxx...
+    ```
 
 ## 방향 2
 
@@ -91,19 +91,23 @@ example.com을 운영 중인 도메인(상위 도메인), sub.example.com을 하
 1. 네이버 클라우드 플랫폼 DNS에 하위 도메인을 신규 생성합니다.
 
 
-![setting](https://cdn.document360.io/6998976f-9d95-4df8-b847-d375892b92c2/Images/Documentation/networking-1-2-103-2-1_ko.png)
+![networking-1-2-103-2-1_ko](https://user-images.githubusercontent.com/45618311/146892567-e42800c7-7774-4241-91a8-27ff4a098533.png)
+
 
 2. 하위 도메인에 필요한 리소스 레코드를 등록합니다. *기존에 하위 도메인이 있고 외부 DNS에서 서비스하고 있었다면* 리소스 레코드를 동일하게 등록합니다.
 
-![setting](https://cdn.document360.io/6998976f-9d95-4df8-b847-d375892b92c2/Images/Documentation/networking-1-2-103-2-2_ko.png)
+![networking-1-2-103-2-2_ko](https://user-images.githubusercontent.com/45618311/146896783-f71f8769-84f1-41ca-810e-0c5ca7acfd84.png)
+
 
 3. 네이버 클라우드 플랫폼 DNS에서 신규 생성한 하위 도메인의 네임서버 정보를 확인할 수 있습니다.
 
-![setting](https://cdn.document360.io/6998976f-9d95-4df8-b847-d375892b92c2/Images/Documentation/networking-1-2-103-2-3_ko.png)
+![networking-1-2-103-2-3_ko](https://user-images.githubusercontent.com/45618311/146896928-ba4a3588-55f4-424e-bfaa-18e4955843f4.png)
+
 
 4. 상위 도메인(example.com)에서 하위 도메인(sub.example.com)에 대한 NS 레코드를 등록합니다. 이때 NS 레코드는 하위 도메인의 네임서버 정보로 등록합니다.
 
-![setting](https://cdn.document360.io/6998976f-9d95-4df8-b847-d375892b92c2/Images/Documentation/networking-1-2-103-2-4_ko.png)
+![networking-1-2-103-2-4_ko](https://user-images.githubusercontent.com/45618311/146897073-b5c5d80c-498c-49b6-a8bc-6559c8ae7902.png)
+
 
 
 ## Informations on the university domain
@@ -146,7 +150,7 @@ example.com을 운영 중인 도메인(상위 도메인), sub.example.com을 하
     - Root domain을 담당하는  name server는 top-level을 담당하는  name server들의 목록과 ip주소를 알고 있다.
     - Top-level을 담당하는 name server는 second-level을 담당하는  name server들의 목록과 ip주소를 알고 있다.
     - **Second-level을 담당하는 DNS 서버는 sub-domain을 담당하는 DNS 서버 목록과 ip주소를 알고 있다.**
-- 단, 두 단계 아래의 name server에 대해서는 알지 못함: root dmain 담당  name server는 second-level 담당  name server에 대해 알지 못함.
+- 단, 두 단계 아래의 name server에 대해서는 알지 못함: root domain 담당  name server는 second-level 담당  name server에 대해 알지 못함.
 
 ### 1.2. Hierarchical procedure of IP query
 
@@ -238,3 +242,4 @@ top level domain name server가 내 name server를 기억하는 방식도 NS
 [^fn6]: https://www.whois.com/whois/yonsei.ac.kr
 [^fn7]: http://www.inames.co.kr
 [^fn8]: https://guide.ncloud-docs.com/docs/ko/networking-networking-1-2
+[^fn9]: https://www.dothome.co.kr/
