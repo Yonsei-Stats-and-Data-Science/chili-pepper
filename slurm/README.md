@@ -25,7 +25,7 @@ The current resource of the **chilipepper** cluster follows.
 ![HPC hierarchy](./assets/topology.drawio.png)
 
 
-## Slurm installation(For all instances)
+## System Setup & Configuration
 
 To connect all resources in a private network, a common configuration file stating various information of the head instance and child nodes is required. A very usefull terminal emulator for cluster configuration is [iTerm2](https://iterm2.com). This enables input sharing across all sessions. The following instructions are ran in `root`.
 
@@ -98,6 +98,7 @@ systemctl restart munge.service
 ```
 
 - Check encoding and decoding locally and between servers.
+
 ```bash
 # FROM HEAD NODE
 munge -n | unmunge # locally generate encoded credential to stdout and decode
@@ -105,7 +106,36 @@ munge -n | ssh <cpu-node> unmunge # remotely decode
 munge -n | ssh <gpu-node> unmunge
 ```
 
+### Slurm Installation and Congiruation
 
+
+
+The latest version of slurm can be downloaded via the following link;https://www.schedmd.com/downloads.php. Note that packaged version for Ubuntu is also available according to [Slurm download docs](https://slurm.schedmd.com/download.html). In this document we will go through the installation by compiling manually.
+
+
+1. Download tarball and decompress.
+
+```bash
+# FOR ALL SERVERS
+wget https://download.schedmd.com/slurm/slurm-21.08.5.tar.bz2
+tar --bzip -x -f slurm-21.08.5.tar.bz2
+```
+
+2. Build slurm.
+```bash
+cd slurm-21.08.5/
+.configure # default prefix: /usr/local/, sysconfdir: /usr/local/etc, 
+make # compile
+make install # install programs, docs, libraries
+```
+
+3. Change ownership and user `slurm` group.
+```bash
+# FOR ALL SERVERS
+touch /var/run/slurmctld.pid
+touch /var/run/slurmd.pid
+chown slurm /var/spool/slurmd
+```
 
 
 
@@ -114,8 +144,7 @@ munge -n | ssh <gpu-node> unmunge
 
 ## Resources
 
-https://southgreenplatform.github.io/trainings/hpc/slurminstallation/
-
-https://slurm.schedmd.com/overview.html
-
-https://repository.kisti.re.kr/bitstream/10580/6542/1/2014-147%20Slurm%20관리자%20이용자%20가이드.pdf
+- https://slurm.schedmd.com/overview.html
+- https://slurm.schedmd.com/quickstart_admin.html
+- https://southgreenplatform.github.io/trainings/hpc/slurminstallation/
+- https://repository.kisti.re.kr/bitstream/10580/6542/1/2014-147%20Slurm%20관리자%20이용자%20가이드.pdf
