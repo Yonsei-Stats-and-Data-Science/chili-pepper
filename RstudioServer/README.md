@@ -118,6 +118,31 @@ One can use SLURM to submit a variety of types of parallel code. A set of potent
 Many institutions run RStudio server managed by SLURM, 
 ### Department of Statistics, University of California Berkely [^fn3]
 ### High Performance Computing Cluster, The Iowa State University [^fn4]
+To use RStudio Server on hpc-class, a user submits a SLURM job script. This allows RStudio Server to run on any available hpc-class compute resources (including large-memory nodes). A default job script that should suffice for most users is provided.
+
+Starting RStudio Server
+
+1. Log into hpc-class via SSH (see the Quick Start Guide for instructions).
+
+2. Submit the RStudio SLURM job script with the following command:
+'''
+sbatch /shared/hpc/containers/Rstudio/4.0.0/rstudio.job
+'''
+(Optional) By default, this SLURM job is limited to a 4 hour time limit, 1 processor core, and 6600 MB memory. To customize, see the section Requesting Additional Compute Resources below.
+
+3. After the job has started, view the “$HOME/rstudio-JOBID.out” file for login information (where JOBID is the SLURM job ID reported by the sbatch command).
+
+'''
+module load singularity > sbatch /shared/hpc/containers/Rstudio/4.0.0/rstudio.job
+Submitted batch job 214664
+cat ~/rstudio-214664.out
+'''
+![rstudio1](https://user-images.githubusercontent.com/45618311/151268969-a07b0736-279c-4a47-90e4-9c0ba69524f5.png)
+
+4. Point your web browser to the listed hostname / port, then enter your ISU user name and the temporary password (valid only for this job only; in this example 9BtKF4VRuOO+BsvpDjav)
+![rstudio2](https://user-images.githubusercontent.com/45618311/151269149-6e9628c7-22c9-4107-967f-6f34dd656fdf.png)
+
+
 ### Princeton Research Computing [^fn9]
 Especially, the Iowa State University uses the combination of Rocker image, Singularity and SLRUM.[^fn4]
 
