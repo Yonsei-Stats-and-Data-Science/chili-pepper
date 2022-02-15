@@ -84,12 +84,20 @@ nginx 설정파일을 수정해서 `www.hpc.stat.yonsei.ac.kr/.well-known/acme-c
 vi /etc/nginx/conf.d/default.conf
 ```
 
-http{} 중괄호 안에 아래 설정을 추가한다.
+기본 설정 파일을 다음과 같이 추가한다.
 
 ```bash
-location ^~ /.well-known/acme-challenge/ {                
-	default_type "text/plain";                
-	root /var/www/hpc.stat.yonsei.ac.kr;
+server {
+    listen       80;
+    server_name  localhost;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;             
+	default_type "text/plain";              # 추가
+	root /var/www/hpc.stat.yonsei.ac.kr;    # 추가
 }
 ```
 
