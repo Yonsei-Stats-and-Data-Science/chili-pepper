@@ -35,9 +35,9 @@ sudo docker ps # 실행 잘 되었는지 보기
 인증서가 저장된 경로, 랜딩 페이지가 저장된 경로를 연결해 줌
 
 - 인증서가 저장된 경로
- `-v /var/www/statstatstat:/var/www/hpc.stat.yonsei.ac.kr`
+ `-v /var/www/hpc.stat.yonsei.ac.kr:/var/www/hpc.stat.yonsei.ac.kr`
 - 랜딩 페이지가 저장된 경로
-`-v /mnt/nas/admin/landing-page/public:/usr/share/nginx/html/landing-page`
+`-v /mnt/nas/public/landing-page:/usr/share/nginx/html/landing-page`
 
 ## 3. 인증서 발급을 위해 nginx 설정
 
