@@ -1,6 +1,6 @@
 ---
 title: docker로 nginx 실행하여 학교 도메인으로 landing page 호스팅하고 ssl encryption
-author: Jongmin Mun
+author: Jongmin Mun, Dongook Son
 ---
 도메인: [hpc.stat.yonsei.ac.kr](http://hpc.stat.yonsei.ac.kr) ([https://yis.yonsei.ac.kr/ics/service/dnsApply.do](https://yis.yonsei.ac.kr/ics/service/dnsApply.do) 에서 신청, 3년마다 갱신 필요)
 
@@ -21,7 +21,7 @@ snap으로 하면 컨테이너 실행 시 `-v` 옵션 사용에 문제가 있으
 ```bash
 sudo mkdir /var/www/hpc.stat.yonsei.ac.kr # ssl 인증서가 저장될 경로
 
-sudo docker run --name landing_page -it -d -p 80:80 -p 443:443 -p 8080:8080 -p 7946:7946 -v /var/www/hpc.stat.yonsei.ac.kr:/var/www/hpc.stat.yonsei.ac.kr -v /mnt/nas/admin/landing-page/public:/usr/share/nginx/html/landing-page nginx
+sudo docker run --name landing_page -it -d -p 80:80 -p 443:443 -p 8080:8080 -p 7946:7946 -v /var/www/hpc.stat.yonsei.ac.kr:/var/www/hpc.stat.yonsei.ac.kr -v /mnt/nas/public/landing-page:/usr/share/nginx/html/landing-page nginx
 
 sudo docker ps # 실행 잘 되었는지 보기
 ```
