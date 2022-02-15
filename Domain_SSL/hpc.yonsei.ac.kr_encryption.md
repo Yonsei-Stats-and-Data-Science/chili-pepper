@@ -105,8 +105,8 @@ server {
 
 그리고 인터넷 브라우저에서 [`hpc.yonsei.ac.kr`](http://hpc.yonsei.ac.kr) 로 들어가서 정상 작동되는지 확인한다.
 
-## 4. certbot 설치
-
+## 4. certbot 설치, 인증서 발급
+컨테이너에서 나와서 host에서 certbot을 설치하고 인증서 발급을 진행한다.
 [^fn4]
 
 ```bash
