@@ -16,12 +16,12 @@ main reference: [https://anomie7.tistory.com/59#recentComments](https://anomie7.
 
 snap으로 하면 컨테이너 실행 시 `-v` 옵션 사용에 문제가 있으므로 docker 공식 문서에 나온 방법으로 설치해야 함
 
-## 2.  컨테이너 실행
+## 2.  컨테이너 생성
 
 ```bash
 sudo mkdir /var/www/hpc.stat.yonsei.ac.kr # ssl 인증서가 저장될 경로
 
-sudo docker run --name landing_page -it -d -p 80:80 -p 443:443 -p 8080:8080 -p 7946:7946 -v /var/www/hpc.stat.yonsei.ac.kr:/var/www/hpc.stat.yonsei.ac.kr -v /mnt/nas/public/landing-page:/usr/share/nginx/html/landing-page nginx
+sudo docker run --name deploy -it -d -p 80:80 -p 443:443 -p 8080:8080 -p 7946:7946 -v /var/www/hpc.stat.yonsei.ac.kr:/var/www/hpc.stat.yonsei.ac.kr -v /mnt/nas/public/landing-page:/usr/share/nginx/html/landing-page nginx
 
 sudo docker ps # 실행 잘 되었는지 보기
 ```
@@ -39,9 +39,10 @@ sudo docker ps # 실행 잘 되었는지 보기
 - 랜딩 페이지가 저장된 경로
 `-v /mnt/nas/public/landing-page:/usr/share/nginx/html/landing-page`
 
+
 ## 3. 인증서 발급을 위해 nginx 설정
 
-## **Certbot의 도메인 소유 인증 절차**
+## **(참고)Certbot의 도메인 소유 인증 절차**
 
 본격적인 발급 절차에 앞서, certbot이 어떻게 도메인의 소유권을 확인하는지 알아봅시다. 웹 서버를 통하는 방법과, DNS 레코드를 통한 방법 등 크게 두 가지로 나뉘어집니다.[fn^3]
 
@@ -70,7 +71,7 @@ Certbot이 직접 웹 서버를 띄운 뒤, URL을 통해 해당 웹 서버로 �
 연세대 dns의 경우 dns 레코드 등록시 TXT 레코드를 사용할 수 없으므로 1번의 방법을 사용. 일단 80번 포트로 **`.well-known/acme-challenge`** 경로를 열어줌.
 
 ```bash
-sudo docker exec -it landing_page sh #컨테이너에서 bash 실행
+sudo docker exec -it deploy sh #deploy 컨테이너 속에서 bash 실행
 
 # 컨테이너 내에서 vi 에디터 설치
 apt-get update
@@ -84,7 +85,7 @@ nginx 설정파일을 수정해서 `www.hpc.stat.yonsei.ac.kr/.well-known/acme-c
 vi /etc/nginx/conf.d/default.conf
 ```
 
-기본 설정 파일을 다음과 같이 추가한다.
+기본 설정 파일을 다음과 같이 추가한다. 기존의 location/ 블록 아래에 병렬적으로 추가하면 된다.
 
 ```bash
 server {
@@ -104,9 +105,9 @@ server {
     }
 ```
 
-편집화면에서 나와서 `nginx -T`로 틀린 부분은 없었는지 확인하고 없다면 `nginx -s reload`로 재실행한다.
+`exit`를 입력하고 편집화면에서 나와서 `nginx -T`로 틀린 부분은 없었는지 확인하고 없다면 `nginx -s reload`로 재실행한다.
 
-그리고 인터넷 브라우저에서 [`hpc.yonsei.ac.kr`](http://hpc.yonsei.ac.kr) 로 들어가서 정상 작동되는지 확인한다.
+그리고 인터넷 브라우저에서 [`hpc.stat.yonsei.ac.kr`](http://hpc.stat.yonsei.ac.kr) 로 들어가서 정상 작동되는지 확인한다.
 
 ## 4. certbot 설치, 인증서 발급
 컨테이너에서 나와서 host에서 certbot을 설치하고 인증서 발급을 진행한다.
@@ -145,13 +146,45 @@ These files will be updated when the certificate renews.
 Certbot has set up a scheduled task to automatically renew this certificate in the background.
 ```
 
+만약 기존에 발급한 만료되지 않은 인증서가 이 컴퓨터에 존재한다면, 아래와 같은 메시지가 나온다.
+```
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Certificate not yet due for renewal
+
+You have an existing certificate that has exactly the same domains or certificate name you requested and isn't close to expiry.
+(ref: /etc/letsencrypt/renewal/hpc.stat.yonsei.ac.kr-0002.conf)
+
+What would you like to do?
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: Keep the existing certificate for now
+2: Renew & replace the certificate (may be subject to CA rate limits)
+```
+
+2를 선택해서 renew한다(CA rate limits에 대해서는 추후에 조사...)
+
+아래와 같은 결과가 나온다.
+```
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/hpc.stat.yonsei.ac.kr-0002/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/hpc.stat.yonsei.ac.kr-0002/privkey.pem
+This certificate expires on 2022-05-16.
+These files will be updated when the certificate renews.
+Certbot has set up a scheduled task to automatically renew this certificate in the background.
+```
+
 ## 5. 인증서 파일 옮기기
 
  발급된 privkey.pem와 fullchain.pem 파일은 심볼릭 링크이다.
 
 그래서 도커에서 연결이 불가능하므로 진본파일을 `/var/www/hpc.stat.yonsei.ac.kr`로 옮겨주어야한다.
 
-1. 우선 `/etc/letsencrypt/live/hpc.stat.yonsei.ac.kr`으로는 권한문제로 파일을 조회해볼 수 없다.
+위에서 
+Successfully received certificate.
+Certificate is saved at: ...
+Key is saved at: ...
+에서 ...에 써 있는 경로로(재발급 받았다면 경로가 달라질 수 있으니, 성공 메시지에 나온 경로를 꼭 확인한다) 간 다음에, ls -l로 파일의 원본 위치를 확인하고 그 원본 파일을 `/var/www/hpc.stat.yonsei.ac.kr`로 옮길 것이다.
+
+1. 위 경로에서는 권한문제로 파일을 조회해볼 수 없다.
 2. `sudo chmod +rwx` 명령어로 접근권한을 얻고 디렉토리로 가서 파일의 원본 위치를 확인해보자
 
 ```bash
@@ -160,27 +193,38 @@ sudo chmod +rwx live
 cd ./live/hpc.stat.yonsei.ac.kr
 ls -l
 ```
+![cert_location](./assets/cert_location.png)
 
-1. 저 중 `fullchain1.pem`과 `privkey1.pem`을  `-v` 옵션을 주었던 폴더로 옮겨야 nginx 컨테이너에서도 인증서를 사용할 수 있다.
+
+저 중 `fullchain1.pem`과 `privkey1.pem`(재발급 받았다면 뒤에 다른번호가 붙어있을 수 있음)을  `-v` 옵션을 주었던 폴더로 옮겨야 nginx 컨테이너에서도 인증서를 사용할 수 있다.
+원본 파일의 경로는 ../../archive/hpc.stat.yonsei.ac.kr-0002/fullchain2.pem 와 같은 형식이고,
+옮길 위치는 /var/www/hpc.stat.yonsei.ac.kr/이다.
+
 
 ```bash
-sudo mv ../../archive/hpc.stat.yonsei.ac.kr/fullchain1.pem /var/www/hpc.stat.yonsei.ac.kr/fullchain1.pem
+sudo mv  ../../archive/hpc.stat.yonsei.ac.kr-0002/fullchain2.pem /var/www/hpc.stat.yonsei.ac.kr/fullchain2.pem
 
-sudo mv ../../archive/hpc.stat.yonsei.ac.kr/privkey1.pem /var/www/hpc.stat.yonsei.ac.kr/privkey1.pem
+sudo mv ../../archive/hpc.stat.yonsei.ac.kr-0002/privkey2.pem /var/www/hpc.stat.yonsei.ac.kr/privkey2.pem
 ```
 
-1. 이제 컨테이너로 접속해서 파일이 공유되는지 확인한다.
+ 이제 컨테이너로 접속해서 파일이 공유되는지 확인한다.
+```bash
+sudo docker exec -it deploy sh #deploy 컨테이너 속에서 bash 실행
+cd /var/www/hpc.stat.yonsei.ac.kr
+```
+
 
 ## 6. 웹서버 설정
 
 아래와 같이 `/etc/nginx/conf.d/` 디렉토리에 `landing_test_https.conf`라는 이름으로 설정 파일을 만든다. ssl_protocols 부분에 #TLSv1.3을 써놓지 않으면 사파리, 크롬 등에서 ERR_SSL_VERSION_OR_CIPHER_MISMATCH 오류가 뜬다.
 
+ssl_certificate 부분에 아까 옮긴 pem 파일들의 이름을 써 줘야 한다. 재발급 받았으면 파일 이름 뒤의 번호가 바뀐다는 점에 주의한다.
 ```bash
 sudo docker exec -it landing_page sh
 
-cd /etc/nginx/conf.d/
-vi landing_page_https.conf
+vi /etc/nginx/conf.d/landing_page_https.conf
 
+#파일 내용:
 # configuration file /etc/nginx/conf.d/landing_test_https.conf:
 server {
     listen       443 ssl;
@@ -202,8 +246,8 @@ server {
 
 }
 
-nginx -T
 ```
+nginx -T로 설정 오류 있는지 확인하고, nginx -s reload로 재시작한다.
 
 ## 7. HTTP redirect
 
@@ -215,7 +259,7 @@ sudo mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.dormant
 
 ```bash
 vi /etc/nginx/conf.d/landing_page_https.conf
-
+기존의 server block 아래에 병렬적으로 아래 블록을 추가한다.
 #아래 블록을 추가한다.
 server{
 	listen 80;
@@ -227,7 +271,7 @@ server{
 }
 ```
 [^fn5]
-
+nginx -s reload로 재시작한다.
 ### References
 
 [http://digitalpioneer.net](http://digitalpioneer.net/)
