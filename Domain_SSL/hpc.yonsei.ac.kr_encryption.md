@@ -94,11 +94,14 @@ server {
     #access_log  /var/log/nginx/host.access.log  main;
 
     location / {
-        root   /usr/share/nginx/html;
-        index  index.html index.htm;             
-	default_type "text/plain";              # 추가
-	root /var/www/hpc.stat.yonsei.ac.kr;    # 추가
-}
+        root   /usr/share/nginx/html/landing-page;
+        index  index.html index.htm;
+        default_type "text/plain";                
+    }
+    location ^~ /.well-known/acme-challenge/ {                
+        default_type "text/plain";                
+        root /var/www/hpc.stat.yonsei.ac.kr;
+    }
 ```
 
 편집화면에서 나와서 `nginx -T`로 틀린 부분은 없었는지 확인하고 없다면 `nginx -s reload`로 재실행한다.
