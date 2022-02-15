@@ -2,7 +2,6 @@
 title: docker로 nginx 실행하여 학교 도메인으로 landing page 호스팅하고 ssl encryption
 author: Jongmin Mun
 ---
-
 도메인: [hpc.stat.yonsei.ac.kr](http://hpc.stat.yonsei.ac.kr) ([https://yis.yonsei.ac.kr/ics/service/dnsApply.do](https://yis.yonsei.ac.kr/ics/service/dnsApply.do) 에서 신청, 3년마다 갱신 필요)
 
 인증서 발급기관: Let’s encrypt(3개월마다 갱신 필요)
@@ -82,7 +81,7 @@ nginx 설정파일을 수정해서 `www.hpc.stat.yonsei.ac.kr/.well-known/acme-c
 
 ```bash
 #nginx 설정파일은 /etc/nginx/conf.d/default.conf에 위치하고 있으니 vi 명령어로 편집화면으로 들어간다.
-sudo vi /etc/nginx/conf.d/default.conf
+vi /etc/nginx/conf.d/default.conf
 ```
 
 http{} 중괄호 안에 아래 설정을 추가한다.
@@ -169,7 +168,7 @@ sudo mv ../../archive/hpc.stat.yonsei.ac.kr/privkey1.pem /var/www/hpc.stat.yonse
 sudo docker exec -it landing_page sh
 
 cd /etc/nginx/conf.d/
-vi landing_test_https.conf
+vi landing_page_https.conf
 
 # configuration file /etc/nginx/conf.d/landing_test_https.conf:
 server {
@@ -195,7 +194,28 @@ server {
 nginx -T
 ```
 
-## 7. 결과
+## 7. HTTP redirect
+
+우선, certbot ssl 인증을 위해 사용했던  [localhost](http://localhost) server 설정이 들어 있는 default.conf 파일을 nginx.conf가 참조하지 못하도록 파일명을 바꿔 놓는다.
+
+```bash
+sudo mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.dormant
+```
+
+```bash
+vi /etc/nginx/conf.d/landing_page_https.conf
+
+#아래 블록을 추가한다.
+server{
+	listen 80;
+	server_name hpc.stat.yonsei.ac.kr;
+	root html;
+	location / {
+		return 301 https://hpc.stat.yonsei.ac.kr$request_uri;
+		}
+}
+```
+[^fn5]
 
 ### References
 
@@ -208,3 +228,5 @@ nginx -T
 [^fn3]:[https://lynlab.co.kr/blog/72](https://lynlab.co.kr/blog/72)
 
 [^fn4]:[https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal](https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal)
+
+[^fn5]: https://www.lesstif.com/system-admin/nginx-http-https-force-redirect-to-ssl-113344694.html
