@@ -11,7 +11,9 @@
 <br/>
 
 <p align="center">
-    <img width="20%" src="https://hpc.stat.yonsei.ac.kr/images/chili.png" alt="Chili Pepper Cluster Logo">
+    <a href="https://hpc.stat.yonsei.ac.kr">
+        <img width="20%" src="https://hpc.stat.yonsei.ac.kr/images/chili.png" alt="Chili Pepper Cluster Logo">
+    </a>
 </p>
 <br/>
 
