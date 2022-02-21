@@ -1,13 +1,26 @@
----
-title: How to write documentation for this repo
-author: Dongook Son
----
+<br/>
+<p align="center">
+    <a href="https://hpc.stat.yonsei.ac.kr/" target="_blank">
+        <img width="50%" src="https://hpc.stat.yonsei.ac.kr/images/logo.svg" alt="Yonsei BK logo">
+    </a>
+</p>
 
-## Intro
+<br/>
+<p align="center">
+</p>
+<br/>
 
-This repository contains various documentation for configuring and operating cloud-based HPC clusters and GPU on-premise servers. All documents should be in a `.md` format. You can commit documentation adhering to the following steps:  
+<p align="center">
+    <img width="20%" src="https://hpc.stat.yonsei.ac.kr/images/chili.png" alt="Chili Pepper Cluster Logo">
+</p>
+<br/>
 
-## Creating a new documentation topic
+[Chili Pepper Cluster](https://hpc.stat.yonsei.ac.kr/) is a data science computing cluster configured to run science workloads via [SLURM](https://slurm.schedmd.com). The cluster is hosted via Naver Cloud Platform and configured by student administrators. This project is funded by BK21 Foundation and Yonsei University Department of Statistics and Data Science.
+
+This repository contains various documentation for configuring and operating cloud-based HPC clusters and GPU on-premise servers. All documents are markdown files for accessibility. You can commit documentation adhering to the following steps:  
+
+
+***Creating a new documentation topic***
 
 1. Look for an undocumented topic in this repository(`GitHub > Projects`).
 
@@ -31,7 +44,7 @@ author: SOME_ONE
 ---
 ```
 
-## Adding new content for existing topic
+***Adding new content for existing topic***
 
 1. Navigate to the existing topic folder and open the associated `README.md` file. 
 
@@ -60,7 +73,7 @@ $ git commit -m "[update]some new feature"
 $ git commit -m "[deprecated]some old feature"
 ```
 
-## Footnotes
+***Footnotes***
 
 Markdown supports footnotes with the following syntax(`[^NAME]`). Footnotes will be rendered easily in GitHub.
 
@@ -73,7 +86,7 @@ Einstein said "..."[^fn1].
 [^fn1]: Some Link or Reference
 ```
 
-## Feedbacks for documents
+***Feedbacks for documents***
 
 *Comment on the commit*  
 

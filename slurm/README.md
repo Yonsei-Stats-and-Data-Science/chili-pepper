@@ -263,6 +263,61 @@ slurmcd -Dvvvv
 scontrol show node --all
 ```
 
+## Slurm Account Management
+
+1. Install `mariadb-server`. Upon installation enter the password for the `root` user of `mariadb`.
+```bash
+apt install mariadb-server
+```
+
+2. Enable and start the mariadb service.
+```bash
+systemctl enable mariadb
+systemctl start mariadb
+```
+
+3. Create and configure `slurm_acct_db` database.
+
+```bash
+# login to mysql as root
+mysql -u root -p
+```
+
+```mysql
+mysql> grant all on slurm_acct_db.* TO 'slurm'@'localhost' identified by 'some_password' with grant option;
+mysql> create database slurm_acct_db;
+```
+
+4. Configure `slurmdbd.conf`.
+```bash
+vi /usr/local/etc/slurmdbd.conf
+```
+
+```txt
+# /usr/local/etc/slurmdbd.conf
+AuthType=auth/munge
+  DbdAddr=192.168.10.6
+  DbdHost=proxy
+  SlurmUser=slurm
+  DebugLevel=4
+  LogFile=/var/log/slurm/slurmdbd.log
+  PidFile=/var/run/slurmdbd.pid
+  StorageType=accounting_storage/mysql
+  StorageHost=proxy
+  StoragePass=some_password
+  StorageUser=slurm
+  StorageLoc=slurm_acct_db
+```
+
+5. Enable and start `slurmdbd.service`.
+```bash
+systemctl enable slurmdbd
+systemctl start slurmdbd
+```
+
+
+
+
 
 
 ## Resources
