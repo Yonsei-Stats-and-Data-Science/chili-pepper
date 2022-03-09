@@ -17,6 +17,12 @@
 </p>
 <br/>
 
+
+|   NodeName  |                                                    OS                                                    | Cores |  RAM  | vRAM |                                       Conda                                      |                                               Cuda                                               |
+|:-----------:|:--------------------------------------------------------------------------------------------------------:|:-----:|:-----:|:----:|:--------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------:|
+| cpu-compute | ![Ubuntu: 18.04](https://img.shields.io/static/v1?label=ubuntu&message=18.04.6&color=e95420&logo=ubuntu) |   32  | 128GB |   -  | ![Conda: 4.11.0](https://img.shields.io/badge/conda%7Cconda--forge-v4.11.0-blue) |                                                 -                                                |
+| gpu-compute | ![Ubuntu: 18.04](https://img.shields.io/static/v1?label=ubuntu&message=18.04.6&color=e95420&logo=ubuntu) |   16  |  80GB |  32  | ![Conda: 4.6.14](https://img.shields.io/badge/conda%7Cconda--forge-v4.6.14-blue) | ![Cuda: 10.1](https://img.shields.io/static/v1?label=cuda&message=10.1&color=76b900&logo=nvidia) |
+
 [Chili Pepper Cluster](https://hpc.stat.yonsei.ac.kr/) is a data science computing cluster configured to run science workloads via [SLURM](https://slurm.schedmd.com). The cluster is hosted via Naver Cloud Platform and configured by student administrators. This project is funded by BK21 Foundation and Yonsei University Department of Statistics and Data Science.
 
 This repository contains various documentation for configuring and operating cloud-based HPC clusters and GPU on-premise servers. All documents are markdown files for accessibility. You can commit documentation adhering to the following steps:  
