@@ -315,9 +315,13 @@ systemctl enable slurmdbd
 systemctl start slurmdbd
 ```
 
+## Choose select plugin
+The select plugin is responsible for selecting compute resources to be allocated to a job, plus allocating and deallocating those resources[^fn1].
 
+-  The `select/linear` plugin allocates whole nodes to jobs and is the simplest implementation.
+-  The `select/cons_res` plugin (cons_res is an abbreviation for consumable resources) can allocate individual sockets, cores, threads, or CPUs within a node. The select/cons_res plugin is slightly slower than select/linear, but contains far more complex logic.
 
-
+Since we have only two nodes, we have no choice but choose `cons_res` type.
 
 
 ## Resources
@@ -326,3 +330,7 @@ systemctl start slurmdbd
 - https://slurm.schedmd.com/quickstart_admin.html
 - https://southgreenplatform.github.io/trainings/hpc/slurminstallation/
 - https://repository.kisti.re.kr/bitstream/10580/6542/1/2014-147%20Slurm%20관리자%20이용자%20가이드.pdf
+
+
+# References
+[^fn1]: https://slurm.schedmd.com/select_design.html
