@@ -165,6 +165,9 @@ usermod -aG syslog slurm
 # FOR ALL Servers
 slurmd -C # check server configuration
 vi /usr/local/etc/slurm.conf # edit slurm.conf
+
+# in our current setting, the slurm.conf file is located at 
+vi /etc/slurm-llnl/slurm.conf 
 ```
 
 ```txt
