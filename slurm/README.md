@@ -324,7 +324,7 @@ The select plugin is responsible for selecting compute resources to be allocated
 -  The `select/linear` plugin allocates whole nodes to jobs and is the simplest implementation.
 -  The `select/cons_res` plugin (cons_res is an abbreviation for consumable resources) can allocate individual sockets, cores, threads, or CPUs within a node. The select/cons_res plugin is slightly slower than select/linear, but contains far more complex logic.
 
-Since we have only two nodes, we have no choice but choose `cons_res` type.
+Since we have only two nodes, we have no choice but choose `cons_res` type.[^fn2][^fn3]
 
 
 ## Resources
@@ -337,3 +337,5 @@ Since we have only two nodes, we have no choice but choose `cons_res` type.
 
 # References
 [^fn1]: https://slurm.schedmd.com/select_design.html
+[^fn2]: https://stackoverflow.com/questions/51363097/slurmall-cpus-in-a-node-are-allocated-by-a-job-which-just-need-a-subset-of-cpus
+[^fn3]: https://stackoverflow.com/questions/49466020/specify-number-of-cpus-for-a-job-on-slurm

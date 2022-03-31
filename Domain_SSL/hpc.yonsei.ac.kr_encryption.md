@@ -110,7 +110,7 @@ server {
 그리고 인터넷 브라우저에서 [`hpc.stat.yonsei.ac.kr`](http://hpc.stat.yonsei.ac.kr) 로 들어가서 정상 작동되는지 확인한다.
 
 ## 4. certbot 설치, 인증서 발급
-컨테이너에서 나와서 host에서 certbot을 설치하고 인증서 발급을 진행한다.
+**컨테이너에서 나와서(꼭 나와야 함!)** host에서 certbot을 설치하고 인증서 발급을 진행한다.
 [^fn4]
 
 ```bash
@@ -172,6 +172,9 @@ These files will be updated when the certificate renews.
 Certbot has set up a scheduled task to automatically renew this certificate in the background.
 ```
 
+또는 
+```sudo rm -rf /etc/letsencrypt/```
+로 폴더를 지워버리면 다시 깨끗하게 처음으로 돌아가 이메일 입력을 요구하는 단계부터 시작할 수 있다.
 ## 5. 인증서 파일 옮기기
 
  발급된 privkey.pem와 fullchain.pem 파일은 심볼릭 링크이다.
