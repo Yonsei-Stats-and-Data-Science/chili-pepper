@@ -1,37 +1,39 @@
 ---
-title: JupyterHub with Kubernetes for Yonsei Data Science Machine
+title: Troubeshooting
 author: Dongook Son
 ---
 
 # JupyterHub with Kubernetes for Yonsei Data Science Machine
 
-## Intro
+## Docker troubleshooting
 
-For multiple data science researchers or students to seamlessly work on a HPC(high performance computing) environment for multiple projects, it is much efficient to provide common research tools such as jupyter notebooks and R studio instead of just giving them the ssh login information.
+### bind: address already in use
+컨테이너를 start, restart할 때 발생 (docker 가 정상적으로 종료되지 않아 발생한 에러인 듯)
 
-Although this is possible via projects such as JupyterHub[^fn1] and RStudio Workbench[^fn2], the server needs to be carefully configured for a stable and efficient implementation. This document will cover configuration of JupyterHub for a mid-size(100-200 users) academic research environment.
+- Error message:
+  
+```
+Error response from daemon: driver failed programming external connectivity on endpoint freeipa (3cdc3391a606f09173f4bc2538e19e12f7ca7c4fef35ddc97c27315872b1f908): Error starting userland proxy: **listen tcp 0.0.0.0:9389: bind: address already in use**
+```
 
-This document will contain similar content with the Readthedocs page of JupyterHub[^fn3] but with additional information regarding the particular setup environment in mind. Since the server environment will be comprised of multiple computers with various CPUs and GPUs, the Zero to JupyterHub on Kubernetes[^fn4] will be the building block and the main reference to this manual.
+포트가 이미 할당되어 있어서 발생한 에러로 해당 포트를 사용 중인지 확인. -i 뒤에 한 칸 띄우고, :랑 포트번호는 붙여 써야 함
 
-At the time of writing, the hardware server is yet to be installed. Therefore, the configurations handled in this document will be implemented in a cloud server in partnership with Naver Cloud Platform.
+```sudo lsof -i :8000```
 
-## JupyterHub
+output:
+```
+COMMAND PID     USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+nginx   989     root    9u  IPv4  21377      0t0  TCP *:2224 (LISTEN)
+nginx   990 www-data    9u  IPv4  21377      0t0  TCP *:2224 (LISTEN)
+nginx   991 www-data    9u  IPv4  21377      0t0  TCP *:2224 (LISTEN)
+```
 
-JupyterHub can server multiple notebooks for multiple users comprised of the following four subsystems.[^fn3]
+sudo kill -9로 할당되어 있는 포트를 죽인 후 다시 docker 컨테이너를 재시작하면 문제 해결
 
-1. Hub: tornado(python web framework & asynchronous networking library)[^fn5]
-2. Configurable http proxy: node module that provides a way to update and manage a proxy table via CLI or REST API.[^fn6]
-3. multiple single-user Jupyter notebook servers monitored by Spawners.
-4. Authentication class that manages how users can access the system. Controlled via configuration file. 
-
-
-![gist of jupyterhub](https://jupyterhub.readthedocs.io/en/stable/_images/jhub-fluxogram.jpeg)
-
-## Use case
-
-### University of Toronto
-
-University of Toronto, with 2i2c.org and Microsoft Canada, is hosting a JupyterHub server for instructors and students on its HPC "Niagara" server.[^fn7] Since this is a CPU dedicated node, users who seek to optimize code for GPU computing will need to access another HPC called "Mist". 
+```
+sudo kill -9 989
+sudo kill -9 990
+sudo kill -9 991```
 
 [^fn1]: https://github.com/jupyterhub/jupyterhub
 [^fn2]: https://www.rstudio.com/products/workbench/
