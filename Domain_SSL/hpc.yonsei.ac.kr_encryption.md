@@ -127,6 +127,10 @@ sudo ln -s /snap/bin/certbot /usr/bin/certbot # ensure that the certbot command 
 
 인증서 발급
 
+갱신할 때는 
+```sudo rm -rf /etc/letsencrypt/```
+로 폴더를 지우고 다시 깨끗하게 처음으로 돌아가 이메일 입력을 요구하는 단계부터 시작하는 것이 마음 편하다.
+
 ```bash
 sudo certbot certonly --webroot -w /var/www/hpc.stat.yonsei.ac.kr -d hpc.stat.yonsei.ac.kr
 ```
@@ -172,14 +176,13 @@ These files will be updated when the certificate renews.
 Certbot has set up a scheduled task to automatically renew this certificate in the background.
 ```
 
-또는 
-```sudo rm -rf /etc/letsencrypt/```
-로 폴더를 지워버리면 다시 깨끗하게 처음으로 돌아가 이메일 입력을 요구하는 단계부터 시작할 수 있다.
+
 ## 5. 인증서 파일 옮기기
+발
+- 발급된 privkey.pem와 fullchain.pem 파일 원본은 /etc/letsencrypt/archive/hpc.stat.yonsei.ac.kr에 있다.
+- 도커 외부의 `/etc/letsencrypt/live/hpc.stat.yonsei.ac.kr`에 있는 파일들은 심볼릭 링크일 뿐이다.
+- 도커에서는 심볼릭 링크는 연결할 수 없다. 따라서 외부에서 원본 파일을 도커와 연결된 `/var/www/hpc.stat.yonsei.ac.kr`로 옮긴다.
 
- 발급된 privkey.pem와 fullchain.pem 파일은 심볼릭 링크이다.
-
-그래서 도커에서 연결이 불가능하므로 진본파일을 `/var/www/hpc.stat.yonsei.ac.kr`로 옮겨주어야한다.
 
 위에서 
 Successfully received certificate.
@@ -205,9 +208,9 @@ ls -l
 
 
 ```bash
-sudo mv  ../../archive/hpc.stat.yonsei.ac.kr-0002/fullchain2.pem /var/www/hpc.stat.yonsei.ac.kr/fullchain2.pem
+sudo mv  ../../archive/hpc.stat.yonsei.ac.kr/fullchain1.pem /var/www/hpc.stat.yonsei.ac.kr/fullchain1.pem
 
-sudo mv ../../archive/hpc.stat.yonsei.ac.kr-0002/privkey2.pem /var/www/hpc.stat.yonsei.ac.kr/privkey2.pem
+sudo mv ../../archive/hpc.stat.yonsei.ac.kr/privkey1.pem /var/www/hpc.stat.yonsei.ac.kr/privkey1.pem
 ```
 
  이제 컨테이너로 접속해서 파일이 공유되는지 확인한다.
