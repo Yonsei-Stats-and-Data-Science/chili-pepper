@@ -1,5 +1,4 @@
 ---
-
 title: docker로 nginx 실행하여 학교 도메인으로 landing page 호스팅하고 ssl encryption
 author: Jongmin Mun, Dongook Son
 
@@ -287,105 +286,70 @@ server{
 [^fn5]
 nginx -s reload로 재시작한다.
 
-
-
 ## 4. 인증서 갱신 및 재발급
+
+### 4.1. default.conf 파일 재활성화
 
 컨테이너 속으로 들어간 다음 nginx의 설정 파일 디렉토리로 이동한다.
 
 ```bash
-
 sudo docker exec -it deploy sh #deploy 컨테이너 속에서 bash 실행
-cd /etc/nginx/conf.d
-ls
+
+mv  /etc/nginx/conf.d/default.conf.dormant /etc/nginx/conf.d/default.conf
+mv /etc/nginx/conf.d/landing_page_https.conf /etc/nginx/conf.d/landing_page_https.conf.dormant
 ```
 
-```bash
-default.conf.dormant  landing_page_https.conf  landing_page_https.conf.backup
-```
-
-여기서  `default.conf.dormant`로 틀린 부분 파일을 활성화하고  `landing_page_https.conf`파일을 비활성화할 것이다.
-
-```
-sudo mv  ./default.conf.dormant ./default.conf
-sudo mv ./landing_page_https.conf ./landing_page_https.conf.dormant
-```
-
-`exit`를 입력하고 편집화면에서 나와서 `nginx -T`로 틀린 부분은 없었는지 확인하고 없다면 `nginx -s reload`로 재실행한다.
+`nginx -T`로 틀린 부분은 없었는지 확인하고 없다면 `nginx -s reload`로 재실행한다.
 
 그리고 인터넷 브라우저에서 [`hpc.stat.yonsei.ac.kr`](http://hpc.stat.yonsei.ac.kr) 로 들어가서 정상 작동되는지 확인한다.
 
-## 4. certbot 설치, 인증서 발급
+## 4.2. 기존 인증서 파일 삭제
 
-**컨테이너에서 나와서(꼭 나와야 함!)** host에서 certbot을 설치하고 인증서 발급을 진행한다.
-[^fn4]
-
-```bash
-sudo snap install core; sudo snap refresh core # snapd가 최신 버전이 되도록 함
-
-# 이전에 설치되어 있던 certbot은 삭제
-sudo apt-get remove certbot
-sudo yum remove certbot
-
-sudo snap install --classic certbot #설치
-
-sudo ln -s /snap/bin/certbot /usr/bin/certbot # ensure that the certbot command can be run
+```
+exit #컨테이너에서 빠져나오
+sudo rm -rf /etc/letsencrypt/
 ```
 
-인증서 발급
+## 4.2. certbot 설치, 인증서 발급**컨테이너에서 나와서**
 
-갱신할 때는 `sudo rm -rf /etc/letsencrypt/` 로 폴더를 지우고 다시 깨끗하게 처음으로 돌아가 이메일 입력을 요구하는 단계부터 시작하는 것이 마음 편하다.
+host에서 certbot을 설치하고 인증서 발급을 진행한다.
+[^fn4]
+
+인증서 발급갱신할 때는 ` 로 폴더를 지우고 다시 깨끗하게 처음으로 돌아가 이메일 입력을 요구하는 단계부터 시작하는 것이 마음 편하다.
 
 ```bash
 sudo certbot certonly --webroot -w /var/www/hpc.stat.yonsei.ac.kr -d hpc.stat.yonsei.ac.kr
 ```
 
-아래의 결과가 나옴:
+아래의 결과가 나오면 안내를 따라 이메일을 입력한다.
 
 ```
-mjm@proxy:/var/www/hpc.stat.yonsei.ac.kr$ sudo certbot certonly --webroot -w /var/www/hpc.stat.yonsei.ac.kr -d hpc.stat.yonsei.ac.kr
+mjm@proxy:~$ sudo certbot certonly --webroot -w /var/www/hpc.stat.yonsei.ac.kr -d hpc.stat.yonsei.ac.kr
 Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Enter email address (used for urgent renewal and security notices)
+ (Enter 'c' to cancel):
+```
+
+그리고 안내에 따라 두 번 Y를 입력하면 아래와 같은 결과가 나온다.
+
+```
+Account registered.
 Requesting a certificate for hpc.stat.yonsei.ac.kr
 
 Successfully received certificate.
 Certificate is saved at: /etc/letsencrypt/live/hpc.stat.yonsei.ac.kr/fullchain.pem
 Key is saved at:         /etc/letsencrypt/live/hpc.stat.yonsei.ac.kr/privkey.pem
-This certificate expires on 2022-05-15.
+This certificate expires on 2023-04-19.
 These files will be updated when the certificate renews.
 Certbot has set up a scheduled task to automatically renew this certificate in the background.
-```
 
-만약 기존에 발급한 만료되지 않은 인증서가 이 컴퓨터에 존재한다면, 아래와 같은 메시지가 나온다.
-
-```
-Saving debug log to /var/log/letsencrypt/letsencrypt.log
-Certificate not yet due for renewal
-
-You have an existing certificate that has exactly the same domains or certificate name you requested and isn't close to expiry.
-(ref: /etc/letsencrypt/renewal/hpc.stat.yonsei.ac.kr-0002.conf)
-
-What would you like to do?
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-1: Keep the existing certificate for now
-2: Renew & replace the certificate (may be subject to CA rate limits)
+If you like Certbot, please consider supporting our work by:
+ * Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+ * Donating to EFF:                    https://eff.org/donate-le
 ```
 
-2를 선택해서 renew한다(CA rate limits에 대해서는 추후에 조사...)
-
-아래와 같은 결과가 나온다.
-
-```
-Successfully received certificate.
-Certificate is saved at: /etc/letsencrypt/live/hpc.stat.yonsei.ac.kr-0002/fullchain.pem
-Key is saved at:         /etc/letsencrypt/live/hpc.stat.yonsei.ac.kr-0002/privkey.pem
-This certificate expires on 2022-05-16.
-These files will be updated when the certificate renews.
-Certbot has set up a scheduled task to automatically renew this certificate in the background.
-```
-
-## 5. 인증서 파일 옮기기
-
-발
+## 4.3. 인증서 파일 옮기기
 
 - 발급된 privkey.pem와 fullchain.pem 파일 원본은 /etc/letsencrypt/archive/hpc.stat.yonsei.ac.kr에 있다.
 - 도커 외부의 `/etc/letsencrypt/live/hpc.stat.yonsei.ac.kr`에 있는 파일들은 심볼릭 링크일 뿐이다.
@@ -398,7 +362,7 @@ Key is saved at: ...
 에서 ...에 써 있는 경로로(재발급 받았다면 경로가 달라질 수 있으니, 성공 메시지에 나온 경로를 꼭 확인한다) 간 다음에, ls -l로 파일의 원본 위치를 확인하고 그 원본 파일을 `/var/www/hpc.stat.yonsei.ac.kr`로 옮길 것이다.
 
 1. 위 경로에서는 권한문제로 파일을 조회해볼 수 없다.
-2. `sudo chmod +rwx` 명령어로 접근권한을 얻고 디렉토리로 가서 파일의 원본 위치를 확인해보자
+2. `sudo chmod +rwx` 명령어로 접근권한을 얻고 디렉토리로 가서 파일의 원본 위치를 확인해 보자.
 
 ```bash
 cd /etc/letsencrypt/
@@ -407,8 +371,20 @@ cd ./live/hpc.stat.yonsei.ac.kr
 ls -l
 ```
 
-저 중 `fullchain1.pem`과 `privkey1.pem`(재발급 받았다면 뒤에 다른번호가 붙어있을 수 있음)을 `-v` 옵션을 주었던 폴더로 옮겨야 nginx 컨테이너에서도 인증서를 사용할 수 있다.
-원본 파일의 경로는 ../../archive/hpc.stat.yonsei.ac.kr-0002/fullchain2.pem 와 같은 형식이고,
+아래와 같이 4개의 파일이 나온다.
+
+```bash
+mjm@proxy:/etc/letsencrypt/live/hpc.stat.yonsei.ac.kr$ ls -l
+total 4
+lrwxrwxrwx 1 root root  45 Jan 19 16:01 cert.pem -> ../../archive/hpc.stat.yonsei.ac.kr/cert1.pem
+lrwxrwxrwx 1 root root  46 Jan 19 16:01 chain.pem -> ../../archive/hpc.stat.yonsei.ac.kr/chain1.pem
+lrwxrwxrwx 1 root root  50 Jan 19 16:01 fullchain.pem -> ../../archive/hpc.stat.yonsei.ac.kr/fullchain1.pem
+lrwxrwxrwx 1 root root  48 Jan 19 16:01 privkey.pem -> ../../archive/hpc.stat.yonsei.ac.kr/privkey1.pem
+-rw-r--r-- 1 root root 692 Jan 19 16:01 README
+```
+
+여기 있는  `fullchain1.pem`과 `privkey1.pem`을 `-v` 옵션을 주었던 폴더로 옮겨야 nginx 컨테이너에서도 인증서를 사용할 수 있다.
+원본 파일의 경로는 ../../archive/hpc.stat.yonsei.ac.kr/fullchain1.pem 와 같은 형식이고,
 옮길 위치는 /var/www/hpc.stat.yonsei.ac.kr/이다.
 
 ```bash
@@ -422,51 +398,27 @@ sudo mv ../../archive/hpc.stat.yonsei.ac.kr/privkey1.pem /var/www/hpc.stat.yonse
 ```bash
 sudo docker exec -it deploy sh #deploy 컨테이너 속에서 bash 실행
 cd /var/www/hpc.stat.yonsei.ac.kr
+ls
 ```
 
-## 6. 웹서버 설정
-
-아래와 같이 `/etc/nginx/conf.d/` 디렉토리에 `landing_test_https.conf`라는 이름으로 설정 파일을 만든다. ssl_protocols 부분에 #TLSv1.3을 써놓지 않으면 사파리, 크롬 등에서 ERR_SSL_VERSION_OR_CIPHER_MISMATCH 오류가 뜬다.
-
-ssl_certificate 부분에 아까 옮긴 pem 파일들의 이름을 써 줘야 한다. 재발급 받았으면 파일 이름 뒤의 번호가 바뀐다는 점에 주의한다.
+아래와 같이 파일 목록이 나타나면 성공한 것이다.
 
 ```bash
-sudo docker exec -it landing_page sh
-
-vi /etc/nginx/conf.d/landing_page_https.conf
-
-#파일 내용:
-# configuration file /etc/nginx/conf.d/landing_test_https.conf:
-server {
-    listen       443 ssl;
-    server_name hpc.stat.yonsei.ac.kr;
-
-    ssl_certificate    /var/www/hpc.stat.yonsei.ac.kr/fullchain1.pem;
-    ssl_certificate_key /var/www/hpc.stat.yonsei.ac.kr/privkey1.pem;
-
-    ssl_session_timeout 5m;
-    ssl_protocols SSLv2 SSLv3 TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
-            #TLSv1.3을 써놓지 않으면 사파리, 크롬 등에서 ERR_SSL_VERSION_OR_CIPHER_MISMATCH 오류가 뜸
-    ssl_ciphers HIGH:!aNULL:!MD5;
-    ssl_prefer_server_ciphers on;
-
-    location / {
-        root   /usr/share/nginx/html/landing-page;
-        index  index.html index.htm;
-    }
-
-}
+fullchain1.pem    privkey1.pem  vi
 ```
 
-nginx -T로 설정 오류 있는지 확인하고, nginx -s reload로 재시작한다.
+## 4.4. landing_page_https.conf 파일 재활성화
 
-## 7. HTTP redirect
+```bash
+mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.dormant
+mv /etc/nginx/conf.d/landing_page_https.conf.dormant /etc/nginx/conf.d/landing_page_https.conf
+```
+
+`nginx -T`로 틀린 부분은 없었는지 확인하고 없다면 `nginx -s reload`로 재실행한다.
+
+## 4.5. HTTP redirect
 
 우선, certbot ssl 인증을 위해 사용했던 [localhost](http://localhost) server 설정이 들어 있는 default.conf 파일을 nginx.conf가 참조하지 못하도록 파일명을 바꿔 놓는다.
-
-```bash
-sudo mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.dormant
-```
 
 ```bash
 vi /etc/nginx/conf.d/landing_page_https.conf
