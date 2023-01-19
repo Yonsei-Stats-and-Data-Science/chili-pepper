@@ -110,7 +110,7 @@ server {
 
 `exit`를 입력하고 편집화면에서 나와서 `nginx -T`로 틀린 부분은 없었는지 확인하고 없다면 `nginx -s reload`로 재실행한다.
 
-그리고 인터넷 브라우저에서 [`hpc.stat.yonsei.ac.kr`](http://hpc.stat.yonsei.ac.kr) 로 들어가서 정상 작동되는지 확인한다.
+그리고 인터넷 브라우저에서 [`http://hpc.stat.yonsei.ac.kr`](http://hpc.stat.yonsei.ac.kr) 로 들어가서 정상 작동되는지 확인한다.
 
 ## 4. certbot 설치, 인증서 발급
 
@@ -301,13 +301,16 @@ mv /etc/nginx/conf.d/landing_page_https.conf /etc/nginx/conf.d/landing_page_http
 
 `nginx -T`로 틀린 부분은 없었는지 확인하고 없다면 `nginx -s reload`로 재실행한다.
 
-그리고 인터넷 브라우저에서 [`hpc.stat.yonsei.ac.kr`](http://hpc.stat.yonsei.ac.kr) 로 들어가서 정상 작동되는지 확인한다.
+그리고 인터넷 브라우저에서 [`http://hpc.stat.yonsei.ac.kr`](http://hpc.stat.yonsei.ac.kr) 로 들어가서 정상 작동되는지 확인한다.
 
 ## 4.2. 기존 인증서 파일 삭제
 
+exit로 컨테이너에서 빠져나온다. 아래 코드를 복사해서 붙여넣어 실해한다.
+
 ```
-exit #컨테이너에서 빠져나오
 sudo rm -rf /etc/letsencrypt/
+sudo rm /var/www/hpc.stat.yonsei.ac.kr/fullchain1.pem
+sudo rm /var/www/hpc.stat.yonsei.ac.kr/privkey1.pem
 ```
 
 ## 4.2. certbot 설치, 인증서 발급**컨테이너에서 나와서**
@@ -389,7 +392,6 @@ lrwxrwxrwx 1 root root  48 Jan 19 16:01 privkey.pem -> ../../archive/hpc.stat.yo
 
 ```bash
 sudo mv  ../../archive/hpc.stat.yonsei.ac.kr/fullchain1.pem /var/www/hpc.stat.yonsei.ac.kr/fullchain1.pem
-
 sudo mv ../../archive/hpc.stat.yonsei.ac.kr/privkey1.pem /var/www/hpc.stat.yonsei.ac.kr/privkey1.pem
 ```
 
