@@ -44,34 +44,35 @@ sudo docker ps # 실행 잘 되었는지 보기
   `-v /mnt/nas/public/landing-page:/usr/share/nginx/html/landing-page`
 
 ## 3. 인증서 발급을 위해 nginx 설정 (최초 발급시)
+인증서 재발급은 4번 항목에 안내되어 있습니다.
+### **(참고)Certbot의 도메인 소유 인증 절차**
 
-## **(참고)Certbot의 도메인 소유 인증 절차**
+ertbot이 도메인의 소유권을 확인하는 방법에는 웹 서버를 통하는 방법과 DNS 레코드를 통한 방법이 있다[fn^3].
 
-본격적인 발급 절차에 앞서, certbot이 어떻게 도메인의 소유권을 확인하는지 알아봅시다. 웹 서버를 통하는 방법과, DNS 레코드를 통한 방법 등 크게 두 가지로 나뉘어집니다.[fn^3]
+#### **웹 서버를 통한 도메인 인증**
 
-### **웹 서버를 통한 도메인 인증**
-
-Certbot이 직접 웹 서버를 띄운 뒤, URL을 통해 해당 웹 서버로 접속을 시도하여 도메인의 소유를 검증하는 방법입니다.
-
-예를 들어 yourdomain.com이라는 도메인의 인증서를 발급받고자 한다면, certbot은 **`yourdomain.com/.well-known/acme-challenge`** URL을 통해 여러분의 서버에 접속하여 실제 발급을 시도 중인 서버가 맞는지 확인하게 됩니다.
+Certbot이 직접 웹 서버를 띄운 뒤, URL을 통해 해당 웹 서버로 접속을 시도하여 도메인의 소유를 검증한다. 예를 들어 yourdomain.com이라는 도메인의 인증서를 발급받고자 한다면, certbot은 **`yourdomain.com/.well-known/acme-challenge`** URL을 통해 여러분의 서버에 접속하여 실제 발급을 시도 중인 서버가 맞는지 확인한다.
 
 - 장점
-  - 대부분의 경우에 쉽고 간단합니다. 명령어 한 줄로 인증서 발급부터 nginx, haproxy 등의 리버스 프록시 인증서 셋팅까지 자동으로 해주거든요.
+  - 쉽다. 명령어 한 줄로 인증서 발급부터 nginx, haproxy 등의 리버스 프록시 인증서 셋팅까지 자동으로 해 주기 떄문이다.
 - 단점
-  - 운영중인 환경에서 인증서를 발급받기 난감합니다. 그 이유는, **80(443) 포트로 직접 웹 서버가 떠야하기 때문**입니다. 운영중인 서비스에서 두 포트 중 하나만 사용한다면 괜찮지만, 만약 두 포트를 모두 사용하고 있다면 인증서를 발급 받기 위해 서비스를 잠시 내려야하는 치명적인 단점이 있습니다.
-  - 방화벽이 엄격하게 설정된 경우에는 발급 과정이 번거롭습니다. Certbot은 접속할 URL 경로를 수동으로 지정할 수 없기 때문에, 위에서 언급한 **`.well-known/acme-challenge`** 경로를 열어주어야합니다.
+  - 운영중인 환경에서 인증서를 발급받기 난감하다. 그 이유는, **80(443) 포트로 직접 웹 서버가 떠야하기 때문**이다. 운영중인 서비스에서 두 포트 중 하나만 사용한다면 괜찮지만, 만약 두 포트를 모두 사용하고 있다면 인증서를 발급 받기 위해 서비스를 잠시 내려야 한다.
+  - 방화벽이 엄격하게 설정된 경우에는 발급 과정이 번거롭다. Certbot은 접속할 URL 경로를 수동으로 지정할 수 없기 때문에, 위에서 언급한 **`.well-known/acme-challenge`** 경로를 열어주어야 한다.
 
-### **DNS를 통한 도메인 인증**
+#### **DNS를 통한 도메인 인증**
 
-대부분의 서비스에서 많이 사용하는 방식입니다. 인증 토큰을 TXT 레코드로 등록하여 도메인의 소유권을 인증합니다.
+대부분의 서비스에서 많이 사용하는 방식으로, 인증 토큰을 TXT 레코드로 등록하여 도메인의 소유권을 인증한다.
 
 - 장점
-  - 서버의 설정을 전혀 건드릴 필요가 없습니다. 때문에 운영중인 환경에서도 쉽게 발급이 가능합니다.
+  - 서버의 설정을 전혀 건드릴 필요가 없으므로, 운영중인 환경에서도 쉽게 발급이 가능하다.
 - 단점
-  - DNS 레코드를 등록해주는 절차가 번거로울 수 있습니다. 개인 단위에서는 문제가 없겠지만, 단체나 회사에서 관리하는 도메인의 경우 레코드를 건드리는게 불가능할 수도 있고요.
-  - DNS 전파 시간을 기다려야하는 점도 귀찮은 점 중 하나입니다.
+  - DNS 레코드를 등록해주는 절차가 번거로울 수 있다. 개인 단위에서는 문제가 없겠지만, 단체나 회사에서 관리하는 도메인의 경우 레코드를 건드리는게 불가능할 수도 있다.
+  - DNS 전파 시간을 기다려야 한다.
 
-연세대 dns의 경우 dns 레코드 등록시 TXT 레코드를 사용할 수 없으므로 1번의 방법을 사용. 일단 80번 포트로 **`.well-known/acme-challenge`** 경로를 열어줌.
+연세대 dns의 경우 dns 레코드 등록시 TXT 레코드를 사용할 수 없으므로 1번의 방법을 사용한다.
+
+### 3.1. nginx 설정
+ 일단 80번 포트로 **`.well-known/acme-challenge`** 경로를 열어준다.
 
 ```bash
 sudo docker exec -it deploy sh #deploy 컨테이너 속에서 bash 실행
@@ -112,7 +113,7 @@ server {
 
 그리고 인터넷 브라우저에서 [`http://hpc.stat.yonsei.ac.kr`](http://hpc.stat.yonsei.ac.kr) 로 들어가서 정상 작동되는지 확인한다.
 
-## 4. certbot 설치, 인증서 발급
+### 3.2. certbot 설치, 인증서 발급
 
 **컨테이너에서 나와서(꼭 나와야 함!)** host에서 certbot을 설치하고 인증서 발급을 진행한다.
 [^fn4]
@@ -182,7 +183,7 @@ These files will be updated when the certificate renews.
 Certbot has set up a scheduled task to automatically renew this certificate in the background.
 ```
 
-## 5. 인증서 파일 옮기기
+### 3.3. 인증서 파일 옮기기
 
 발
 
@@ -225,7 +226,7 @@ sudo docker exec -it deploy sh #deploy 컨테이너 속에서 bash 실행
 cd /var/www/hpc.stat.yonsei.ac.kr
 ```
 
-## 6. 웹서버 설정
+### 3.4. 웹서버 설정
 
 아래와 같이 `/etc/nginx/conf.d/` 디렉토리에 `landing_test_https.conf`라는 이름으로 설정 파일을 만든다. ssl_protocols 부분에 #TLSv1.3을 써놓지 않으면 사파리, 크롬 등에서 ERR_SSL_VERSION_OR_CIPHER_MISMATCH 오류가 뜬다.
 
@@ -261,7 +262,7 @@ server {
 
 nginx -T로 설정 오류 있는지 확인하고, nginx -s reload로 재시작한다.
 
-## 7. HTTP redirect
+### 3.5. HTTP redirect
 
 우선, certbot ssl 인증을 위해 사용했던  [localhost](http://localhost) server 설정이 들어 있는 default.conf 파일을 nginx.conf가 참조하지 못하도록 파일명을 바꿔 놓는다.
 
@@ -418,26 +419,7 @@ mv /etc/nginx/conf.d/landing_page_https.conf.dormant /etc/nginx/conf.d/landing_p
 
 `nginx -T`로 틀린 부분은 없었는지 확인하고 없다면 `nginx -s reload`로 재실행한다.
 
-## 4.5. HTTP redirect
 
-우선, certbot ssl 인증을 위해 사용했던 [localhost](http://localhost) server 설정이 들어 있는 default.conf 파일을 nginx.conf가 참조하지 못하도록 파일명을 바꿔 놓는다.
-
-```bash
-vi /etc/nginx/conf.d/landing_page_https.conf
-기존의 server block 아래에 병렬적으로 아래 블록을 추가한다.
-#아래 블록을 추가한다.
-server{
-    listen 80;
-    server_name hpc.stat.yonsei.ac.kr;
-    root html;
-    location / {
-        return 301 https://hpc.stat.yonsei.ac.kr$request_uri;
-        }
-}
-```
-
-[^fn5]
-nginx -s reload로 재시작한다.
 
 ### References
 
